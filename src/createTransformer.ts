@@ -53,8 +53,8 @@ import {
   updateVariableDeclarationList,
   updateVariableStatement,
   visitEachChild,
-  visitNode
-} from "typescript";
+  visitNode,
+} from 'typescript';
 
 interface Dict {
   [name: string]: string;
@@ -78,10 +78,7 @@ function getImports(node: Node) {
 
     if (importClause.namedBindings) {
       const { namedBindings } = importClause;
-      if (
-        isNamespaceImport(namedBindings) &&
-        namedBindings.name.text !== "from"
-      ) {
+      if (isNamespaceImport(namedBindings) && namedBindings.name.text !== 'from') {
         imports[namedBindings.name.text] = namedBindings.name.text;
       } else if (isNamedImports(namedBindings)) {
         namedBindings.elements.forEach(importSpecifier => {
@@ -156,7 +153,7 @@ function isReactClass(node: Node): node is ClassDeclaration {
     node.heritageClauses[0].types[0].expression &&
     isPropertyAccessExpression(node.heritageClauses[0].types[0].expression) &&
     isIdentifier(node.heritageClauses[0].types[0].expression.expression) &&
-    node.heritageClauses[0].types[0].expression.expression.text === "React"
+    node.heritageClauses[0].types[0].expression.expression.text === 'React'
   ) {
     return true;
   }
@@ -187,7 +184,7 @@ function isReactFunctionDeclaration(node: Node): node is VariableStatement {
       isTypeReferenceNode(type) &&
       isQualifiedName(type.typeName) &&
       isIdentifier(type.typeName.left) &&
-      type.typeName.left.text === "React"
+      type.typeName.left.text === 'React'
     ) {
       return true;
     }
@@ -226,7 +223,7 @@ function getScope(node: Node) {
       ...dict,
       ...getImports(cbNode),
       ...getVariables(cbNode),
-      ...getScope(node.parent)
+      ...getScope(node.parent),
     };
   });
 
@@ -250,9 +247,9 @@ function createInnerType(jsxTags: Array<string>) {
         tag,
         undefined,
         createTypeQueryNode(createIdentifier(tag)),
-        undefined
-      )
-    )
+        undefined,
+      ),
+    ),
   );
 }
 
@@ -270,7 +267,7 @@ function createInnerType(jsxTags: Array<string>) {
 function createInnerValue(name: string, jsxTags: Array<string>) {
   return createStatement(
     createBinary(
-      createPropertyAccess(createIdentifier(name), "inner"),
+      createPropertyAccess(createIdentifier(name), 'inner'),
       SyntaxKind.EqualsToken,
       createObjectLiteral(
         jsxTags.map(tag =>
@@ -281,18 +278,13 @@ function createInnerValue(name: string, jsxTags: Array<string>) {
             [],
             undefined,
             createBlock([
-              createReturn(
-                createAsExpression(
-                  createIdentifier(tag),
-                  createTypeQueryNode(createIdentifier(tag))
-                )
-              )
-            ])
-          )
+              createReturn(createAsExpression(createIdentifier(tag), createTypeQueryNode(createIdentifier(tag)))),
+            ]),
+          ),
         ),
-        true
-      )
-    )
+        true,
+      ),
+    ),
   );
 }
 
@@ -323,25 +315,21 @@ function buildJsxMap(
   node: Node,
   reactStatement?: Node,
   scopeVariables?: Dict,
-  result = new Map<Node, { [tag: string]: string }>()
+  result = new Map<Node, { [tag: string]: string }>(),
 ) {
   node.forEachChild(child => {
     if (!child.parent) {
       child.parent = node;
     }
 
-    if (
-      scopeVariables &&
-      reactStatement &&
-      (isJsxOpeningElement(child) || isJsxSelfClosingElement(child))
-    ) {
+    if (scopeVariables && reactStatement && (isJsxOpeningElement(child) || isJsxSelfClosingElement(child))) {
       const tagName = child.tagName;
       if (isIdentifier(tagName)) {
         const { text } = tagName;
         if (scopeVariables[text]) {
           result.set(reactStatement, {
             ...result.get(reactStatement),
-            [text]: text
+            [text]: text,
           });
         }
       }
@@ -376,17 +364,14 @@ function buildJsxMap(
  * @param statement
  * @param type
  */
-function updateReactClassStatement(
-  statement: ClassDeclaration,
-  type: TypeLiteralNode
-) {
+function updateReactClassStatement(statement: ClassDeclaration, type: TypeLiteralNode) {
   const property = createProperty(
     undefined,
     [createToken(SyntaxKind.StaticKeyword)],
-    "inner",
+    'inner',
     undefined,
     type,
-    undefined
+    undefined,
   );
 
   const members = createNodeArray([...statement.members, property]);
@@ -397,7 +382,7 @@ function updateReactClassStatement(
     statement.name,
     statement.typeParameters,
     statement.heritageClauses,
-    members
+    members,
   );
 }
 
@@ -412,16 +397,12 @@ function updateReactClassStatement(
  * @param statement
  * @param type
  */
-function updateReactVariableStatement(
-  statement: VariableStatement,
-  type: TypeLiteralNode
-) {
+function updateReactVariableStatement(statement: VariableStatement, type: TypeLiteralNode) {
   const { declarationList, modifiers } = statement;
   const variableDeclaration = declarationList.declarations[0];
 
   if (
-    (declarationList.declarations &&
-      declarationList.declarations.length !== 1) ||
+    (declarationList.declarations && declarationList.declarations.length !== 1) ||
     !variableDeclaration.initializer ||
     !variableDeclaration.type
   ) {
@@ -440,19 +421,11 @@ function updateReactVariableStatement(
           createParen(variableDeclaration.initializer),
           createIntersectionTypeNode([
             variableDeclaration.type,
-            createTypeLiteralNode([
-              createPropertySignature(
-                undefined,
-                "inner",
-                undefined,
-                type,
-                undefined
-              )
-            ])
-          ])
-        )
-      )
-    ])
+            createTypeLiteralNode([createPropertySignature(undefined, 'inner', undefined, type, undefined)]),
+          ]),
+        ),
+      ),
+    ]),
   );
 }
 
@@ -468,46 +441,35 @@ export function createTransformer(): TransformerFactory<SourceFile> {
         });
 
         let updatedNode = node;
-        if (
-          isBlock(node) ||
-          isDefaultClause(node) ||
-          isModuleBlock(node) ||
-          isSourceFile(node)
-        ) {
-          const statements = node.statements.reduce<Array<Statement>>(
-            (statements, statement) => {
-              if (jsxMap.has(statement)) {
-                const jsxTags = Object.keys(jsxMap.get(statement) as {});
-                if (jsxTags.length) {
-                  let name;
-                  const type = createInnerType(jsxTags);
-                  if (isReactClass(statement)) {
-                    name = getClassName(statement);
-                    statements.push(updateReactClassStatement(statement, type));
-                  } else if (isReactFunctionDeclaration(statement)) {
-                    const variableDecalration =
-                      statement.declarationList.declarations[0];
-                    if (isIdentifier(variableDecalration.name)) {
-                      name = variableDecalration.name.text;
-                    }
-                    statements.push(
-                      updateReactVariableStatement(statement, type)
-                    );
+        if (isBlock(node) || isDefaultClause(node) || isModuleBlock(node) || isSourceFile(node)) {
+          const statements = node.statements.reduce<Array<Statement>>((statements, statement) => {
+            if (jsxMap.has(statement)) {
+              const jsxTags = Object.keys(jsxMap.get(statement) as {});
+              if (jsxTags.length) {
+                let name;
+                const type = createInnerType(jsxTags);
+                if (isReactClass(statement)) {
+                  name = getClassName(statement);
+                  statements.push(updateReactClassStatement(statement, type));
+                } else if (isReactFunctionDeclaration(statement)) {
+                  const variableDecalration = statement.declarationList.declarations[0];
+                  if (isIdentifier(variableDecalration.name)) {
+                    name = variableDecalration.name.text;
                   }
+                  statements.push(updateReactVariableStatement(statement, type));
+                }
 
-                  if (name) {
-                    statements.push(createInnerValue(name, jsxTags));
-                  }
-                } else {
-                  statements.push(statement);
+                if (name) {
+                  statements.push(createInnerValue(name, jsxTags));
                 }
               } else {
                 statements.push(statement);
               }
-              return statements;
-            },
-            []
-          );
+            } else {
+              statements.push(statement);
+            }
+            return statements;
+          }, []);
 
           if (isBlock(node)) {
             updatedNode = updateBlock(node, statements);

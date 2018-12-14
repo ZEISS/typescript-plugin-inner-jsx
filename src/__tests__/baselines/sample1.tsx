@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
-import Component2, { Component as Component3 } from "library";
+import Component2, { Component as Component3 } from 'library';
 
-import Component from "./Component";
+import Component from './Component';
 
 interface ButtonProps {}
 
