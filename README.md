@@ -74,6 +74,8 @@ Update `tsconfig.json`:
 }
 ```
 
+Now use 'ttsc' instead of 'tsc'!
+
 ## Integration with `Webpack`
 
 This section describes how to integrate the plugin into the build/bundling process driven by [**Webpack**](https://webpack.js.org/) and its TypeScript loaders.
