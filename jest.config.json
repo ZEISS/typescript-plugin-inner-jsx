@@ -1,0 +1,15 @@
+{
+  "automock": false,
+  "globals": {
+    "window": {},
+    "__TS_CONFIG__": "./tsconfig.json"
+  },
+  "moduleFileExtensions": ["ts", "tsx", "js"],
+  "notify": false,
+  "rootDir": "./",
+  "testRegex": "\\.test\\.(ts|tsx)$",
+  "transform": {
+    "\\.(ts|tsx)$": "ts-jest"
+  },
+  "verbose": true
+}

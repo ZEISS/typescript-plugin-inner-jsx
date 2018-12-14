@@ -1,0 +1,37 @@
+{
+  "name": "typescript-plugin-inner-jsx",
+  "version": "0.1.0",
+  "description": "Typescript transformer which adds references to inner JSX components to parent React components",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --outDir dist",
+    "build:prod": "tsc --outDir dist --sourceMap false",
+    "test:baselines": "jest --config ./jest.config.json",
+    "test:watch": "npm run test:baselines -- --watch",
+    "test": "npm run test:baselines",
+    "start": "ts-node src/index.ts",
+    "watch": "nodemon --exec ts-node -- src/index.ts",
+    "runner": "ts-node ./src/runner.ts"
+  },
+  "typings": "dist/index.d.ts",
+  "author": {
+    "name": "DCC Team",
+    "email": "portal@zeiss.com",
+    "url": "https://portal.zeiss.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.2.1",
+    "@phenomnomnominal/tsquery": "^3.0.0",
+    "@types/jest": "^23.3.10",
+    "@types/node": "^10.12.12",
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.7",
+    "ts-is-kind": "^1.0.0",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^7.0.1"
+  },
+  "files": [
+    "dist"
+  ]
+}

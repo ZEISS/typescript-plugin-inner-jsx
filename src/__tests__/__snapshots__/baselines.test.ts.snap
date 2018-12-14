@@ -1,0 +1,1023 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`sample1.tsx: sample1.tsx 1`] = `
+
+File: sample1.tsx
+Source code:
+
+"import * as React from \\"react\\";
+
+import Component2, { Component as Component3 } from \\"library\\";
+
+import Component from \\"./Component\\";
+
+interface ButtonProps {}
+
+const Button: React.SFC<ButtonProps> = () => {
+  const Component5 = () => <div />;
+
+  return (
+    <div>
+      <Component2>
+        <Component3 />
+        <Component>
+          <Component5 />
+          <Component4 />
+        </Component>
+      </Component2>
+    </div>
+  );
+};
+
+const Component4 = () => <div />;
+"
+
+TypeScript before transform:
+
+"import * as React from \\"react\\";
+import Component2, { Component as Component3 } from \\"library\\";
+import Component from \\"./Component\\";
+interface ButtonProps {
+}
+const Button: React.SFC<ButtonProps> = () => {
+    const Component5 = () => <div />;
+    return (<div><Component2><Component3 /><Component><Component5 /><Component4 /></Component></Component2></div>);
+};
+const Component4 = () => <div />;
+"
+
+TypeScript after transform:
+
+"import * as React from \\"react\\";
+import Component2, { Component as Component3 } from \\"library\\";
+import Component from \\"./Component\\";
+interface ButtonProps {
+}
+const Button = ((() => {
+    const Component5 = () => <div />;
+    return (<div>
+      <Component2>
+        <Component3 />
+        <Component>
+          <Component5 />
+          <Component4 />
+        </Component>
+      </Component2>
+    </div>);
+}) as React.SFC<ButtonProps> & {
+    inner: {
+        readonly Component2: typeof Component2;
+        readonly Component3: typeof Component3;
+        readonly Component: typeof Component;
+        readonly Component4: typeof Component4;
+    };
+});
+Button.inner = {
+    get Component2() { return Component2 as typeof Component2; },
+    get Component3() { return Component3 as typeof Component3; },
+    get Component() { return Component as typeof Component; },
+    get Component4() { return Component4 as typeof Component4; }
+};
+const Component4 = () => <div />;
+"
+
+
+`;
+
+exports[`sample2.tsx: sample2.tsx 1`] = `
+
+File: sample2.tsx
+Source code:
+
+"import * as React from \\"react\\";
+
+import Component2, { Component as Component3 } from \\"library\\";
+
+import Component from \\"./Component\\";
+
+interface ButtonProps {}
+
+class Button extends React.Component {
+  render() {
+    const Component5 = () => <div />;
+    return (
+      <div>
+        <Component2>
+          <Component3 />
+          <Component>
+            <Component5 />
+            <Component4 />
+          </Component>
+        </Component2>
+      </div>
+    );
+  }
+}
+
+const Component4 = () => <div />;
+"
+
+TypeScript before transform:
+
+"import * as React from \\"react\\";
+import Component2, { Component as Component3 } from \\"library\\";
+import Component from \\"./Component\\";
+interface ButtonProps {
+}
+class Button extends React.Component {
+    render() {
+        const Component5 = () => <div />;
+        return (<div><Component2><Component3 /><Component><Component5 /><Component4 /></Component></Component2></div>);
+    }
+}
+const Component4 = () => <div />;
+"
+
+TypeScript after transform:
+
+"import * as React from \\"react\\";
+import Component2, { Component as Component3 } from \\"library\\";
+import Component from \\"./Component\\";
+interface ButtonProps {
+}
+class Button extends React.Component {
+    render() {
+        const Component5 = () => <div />;
+        return (<div>
+        <Component2>
+          <Component3 />
+          <Component>
+            <Component5 />
+            <Component4 />
+          </Component>
+        </Component2>
+      </div>);
+    }
+    static inner: {
+        readonly Component2: typeof Component2;
+        readonly Component3: typeof Component3;
+        readonly Component: typeof Component;
+        readonly Component4: typeof Component4;
+    };
+}
+Button.inner = {
+    get Component2() { return Component2 as typeof Component2; },
+    get Component3() { return Component3 as typeof Component3; },
+    get Component() { return Component as typeof Component; },
+    get Component4() { return Component4 as typeof Component4; }
+};
+const Component4 = () => <div />;
+"
+
+
+`;
+
+exports[`sample3.tsx: sample3.tsx 1`] = `
+
+File: sample3.tsx
+Source code:
+
+"import * as React from 'react';
+import styled, { css } from '../../utils/styled';
+import { IconLink } from '../../components/IconLink';
+import { ActionLink } from '../../components/ActionLink';
+import { Condition } from './types';
+import { ui5, ui4 } from '../../colors';
+import { distance } from '../../distance';
+import { ConditionRow } from './ConditionRow.part';
+import { SharedRuleComponentProps } from './RuleEditor.types';
+import { strings } from './constants';
+import { Icon } from '../../components/Icon';
+import { transparentize } from '../../utils/colors';
+
+export interface ConditionGroupProps extends SharedRuleComponentProps {
+  level: number;
+  maxLevels?: number;
+  conditions?: Array<Condition>;
+  operators: Array<string>;
+  onTypeClick(ref?: Array<Condition>): void;
+  onRemoveGroup?(ref?: Array<Condition>): void;
+  type: string;
+  root: boolean;
+  rootHovered?: boolean;
+}
+
+export interface OpacityContainerProps {
+  rootHovered: boolean;
+}
+
+const inactiveOpacity = 0.5;
+const defaultBorderStyle = \`1px solid \${ui5}\`;
+
+const GroupButton = styled.div\`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 22px;
+\`;
+
+const RemoveGroupBtn = GroupButton.extend\`
+  border-left: \${defaultBorderStyle};
+  border-bottom: \${defaultBorderStyle};
+  top: 0;
+  right: 0;
+\`;
+
+const ToggleGroupTypeBtn = GroupButton.extend\`
+  border-right: \${defaultBorderStyle};
+  border-bottom: \${defaultBorderStyle};
+  top: 0;
+  left: 0;
+\`;
+
+const ConditionRowWithRootHovered = css\`
+  opacity: \${inactiveOpacity};
+\`;
+
+const ConditionRowWithoutRootHovered = css\`
+  opacity: 1;
+\`;
+
+const StyledConditionRow = styled.div\`
+  \${({ rootHovered }: OpacityContainerProps) =>
+    rootHovered ? ConditionRowWithRootHovered : ConditionRowWithoutRootHovered}
+\`;
+
+const ControlsContainerWhenRootHovered = css\`
+  \${ToggleGroupTypeBtn}, \${RemoveGroupBtn} {
+    border-color: \${transparentize(ui4, 0.7)};
+  }
+
+  opacity: \${inactiveOpacity};
+\`;
+
+const ControlsContainer = styled.div\`
+  display: flex;
+  align-items: center;
+  justify-content: left;
+
+  \${({ rootHovered }: OpacityContainerProps) => (rootHovered ? ControlsContainerWhenRootHovered : \`\`)}
+\`;
+
+const ContainerWithRootHovered = css\`
+  border: 1px solid \${transparentize(ui4, 0.7)};
+
+  &:hover {
+    > \${StyledConditionRow} {
+      opacity: 1;
+    }
+
+    > \${ControlsContainer} {
+      \${ToggleGroupTypeBtn}, \${RemoveGroupBtn} {
+        border-color: \${ui5};
+      }
+
+      opacity: 1;
+    }
+
+    border: \${defaultBorderStyle};
+  }
+\`;
+
+const ContainerWithoutRootHovered = css\`
+  border: \${defaultBorderStyle};
+\`;
+
+const Container = styled.div\`
+  padding: 38px \${distance.medium} \${distance.medium};
+  margin-bottom: \${distance.medium};
+  position: relative;
+
+  \${({ rootHovered }: OpacityContainerProps) => (rootHovered ? ContainerWithRootHovered : ContainerWithoutRootHovered)}
+\`;
+
+const StyledIconLink = styled(IconLink)\`
+  margin-right: \${distance.medium};
+\`;
+
+const TypeSwitch = styled(ActionLink)\`
+  padding: 5px;
+  font-size: 12px;
+  color: \${ui5};
+\`;
+
+const RemoveIcon = styled(Icon)\`
+  cursor: pointer;
+\`;
+
+const defaultBaseCondition = {
+  fact: '',
+  operator: 'equal',
+  value: '',
+};
+
+export class ConditionGroup extends React.Component<ConditionGroupProps> {
+  private tryToTranslate = (key: string) => {
+    const { translate } = this.props;
+    return (translate && translate(key)) || strings[key] || \`__missing__\${key}\`;
+  };
+
+  private removeCondition = (ref: Condition) => {
+    const { conditions, changeCondition } = this.props;
+
+    if (conditions) {
+      const nextCondition = [...conditions];
+
+      for (const key in conditions) {
+        const condition = conditions[key];
+
+        if (condition === ref) {
+          nextCondition.splice(parseInt(key, 10), 1);
+        }
+      }
+
+      changeCondition(conditions, nextCondition);
+    }
+  };
+
+  private addGroup = () => {
+    const { conditions, changeCondition } = this.props;
+
+    if (conditions && Array.isArray(conditions)) {
+      changeCondition(conditions, [...conditions, { all: [] }]);
+    }
+  };
+
+  private removeGroup = (ref?: Condition) => {
+    const { conditions, changeCondition } = this.props;
+
+    if (ref && conditions && Array.isArray(conditions)) {
+      const nextCondition = [...conditions];
+
+      for (const key in conditions) {
+        const condition = conditions[key];
+
+        if (condition === ref) {
+          nextCondition.splice(parseInt(key, 10), 1);
+        }
+      }
+
+      changeCondition(conditions, nextCondition);
+    }
+  };
+
+  private addCondition = (condition = { ...defaultBaseCondition }) => {
+    const { conditions, changeCondition } = this.props;
+
+    if (conditions && Array.isArray(conditions)) {
+      changeCondition(conditions, [...conditions, condition]);
+    }
+  };
+
+  private handleTypeChange = (ref?: Condition) => {
+    const { conditions, changeCondition } = this.props;
+
+    if (conditions && ref) {
+      const nextCondition = [...conditions];
+      const tempCondition = { ...ref };
+
+      for (const key in conditions) {
+        const condition = conditions[key] as Condition;
+
+        if (condition === ref) {
+          if (condition.any) {
+            nextCondition[key].all = tempCondition.all || tempCondition.any;
+            delete nextCondition[key].any;
+          } else {
+            nextCondition[key].any = tempCondition.any || tempCondition.all;
+            delete nextCondition[key].all;
+          }
+        }
+      }
+      changeCondition(conditions, nextCondition);
+    }
+  };
+
+  private emptyCondition = () => {
+    const { conditions } = this.props;
+    return conditions && Object.keys(conditions).length <= 0;
+  };
+
+  private changeConditionProxy = (ref: Object, value?: any) => {
+    const { changeCondition } = this.props;
+
+    if (!this.emptyCondition()) {
+      changeCondition(ref, value);
+    } else {
+      this.addCondition({ ...defaultBaseCondition, ...value });
+    }
+  };
+
+  private renderConditionRow = (condition: Condition, key: string) => {
+    const { operators, facts, translate, valueRenderer, rootHovered = false } = this.props;
+
+    return (
+      <StyledConditionRow rootHovered={rootHovered} key={key}>
+        <ConditionRow
+          tryToTranslate={this.tryToTranslate}
+          operators={operators}
+          condition={condition}
+          onRemoveCondition={this.removeCondition}
+          changeCondition={this.changeConditionProxy}
+          translate={translate}
+          valueRenderer={valueRenderer}
+          facts={facts}
+        />
+      </StyledConditionRow>
+    );
+  };
+
+  render(): JSX.Element {
+    const {
+      facts,
+      conditions,
+      operators,
+      onTypeClick,
+      onRemoveGroup,
+      type,
+      root,
+      rootHovered = false,
+      maxLevels,
+      level,
+      ...rest
+    } = this.props;
+
+    const showAddGroupBtn = !maxLevels ? true : level < maxLevels;
+
+    return (
+      <Container rootHovered={rootHovered}>
+        {conditions &&
+          conditions.map((condition: Condition, index) =>
+            condition.any || condition.all ? (
+              <ConditionGroup
+                key={\`condition-group-\${index}\`}
+                facts={facts}
+                conditions={condition.any || condition.all}
+                operators={operators}
+                onTypeClick={() => this.handleTypeChange(condition)}
+                onRemoveGroup={() => this.removeGroup(condition)}
+                type={condition.any ? 'any' : 'all'}
+                root={false}
+                rootHovered={rootHovered}
+                maxLevels={maxLevels}
+                level={level + 1}
+                {...rest}
+              />
+            ) : (
+              this.renderConditionRow(condition, \`condition-\${index}\`)
+            ),
+          )}
+        {this.emptyCondition() && this.renderConditionRow({ ...defaultBaseCondition }, 'ghost-condition')}
+        <ControlsContainer rootHovered={rootHovered}>
+          <StyledIconLink icon=\\"Add\\" onClick={() => this.addCondition()}>
+            {this.tryToTranslate('condition')}
+          </StyledIconLink>
+          {showAddGroupBtn && (
+            <StyledIconLink icon=\\"Add\\" onClick={this.addGroup}>
+              {this.tryToTranslate('group')}
+            </StyledIconLink>
+          )}
+          {conditions && !root && onRemoveGroup && (
+            <RemoveGroupBtn>
+              <RemoveIcon name=\\"Delete\\" onClick={() => onRemoveGroup(conditions)} color={ui5} />
+            </RemoveGroupBtn>
+          )}
+          <ToggleGroupTypeBtn>
+            <TypeSwitch onClick={() => onTypeClick(conditions)}>{this.tryToTranslate(type)}</TypeSwitch>
+          </ToggleGroupTypeBtn>
+        </ControlsContainer>
+      </Container>
+    );
+  }
+}
+"
+
+TypeScript before transform:
+
+"import * as React from \\"react\\";
+import styled, { css } from \\"../../utils/styled\\";
+import { IconLink } from \\"../../components/IconLink\\";
+import { ActionLink } from \\"../../components/ActionLink\\";
+import { Condition } from \\"./types\\";
+import { ui5, ui4 } from \\"../../colors\\";
+import { distance } from \\"../../distance\\";
+import { ConditionRow } from \\"./ConditionRow.part\\";
+import { SharedRuleComponentProps } from \\"./RuleEditor.types\\";
+import { strings } from \\"./constants\\";
+import { Icon } from \\"../../components/Icon\\";
+import { transparentize } from \\"../../utils/colors\\";
+export interface ConditionGroupProps extends SharedRuleComponentProps {
+    level: number;
+    maxLevels?: number;
+    conditions?: Array<Condition>;
+    operators: Array<string>;
+    onTypeClick(ref?: Array<Condition>): void;
+    onRemoveGroup?(ref?: Array<Condition>): void;
+    type: string;
+    root: boolean;
+    rootHovered?: boolean;
+}
+export interface OpacityContainerProps {
+    rootHovered: boolean;
+}
+const inactiveOpacity = 0.5;
+const defaultBorderStyle = \`1px solid \${ui5}\`;
+const GroupButton = styled.div \`\\\\n  position: absolute;\\\\n  display: flex;\\\\n  align-items: center;\\\\n  justify-content: center;\\\\n  height: 22px;\\\\n  min-width: 22px;\\\\n\`;
+const RemoveGroupBtn = GroupButton.extend \`\\\\n  border-left: \${defaultBorderStyle};\\\\n  border-bottom: \${defaultBorderStyle};\\\\n  top: 0;\\\\n  right: 0;\\\\n\`;
+const ToggleGroupTypeBtn = GroupButton.extend \`\\\\n  border-right: \${defaultBorderStyle};\\\\n  border-bottom: \${defaultBorderStyle};\\\\n  top: 0;\\\\n  left: 0;\\\\n\`;
+const ConditionRowWithRootHovered = css \`\\\\n  opacity: \${inactiveOpacity};\\\\n\`;
+const ConditionRowWithoutRootHovered = css \`\\\\n  opacity: 1;\\\\n\`;
+const StyledConditionRow = styled.div \`\\\\n  \${({ rootHovered }: OpacityContainerProps) => rootHovered ? ConditionRowWithRootHovered : ConditionRowWithoutRootHovered}\\\\n\`;
+const ControlsContainerWhenRootHovered = css \`\\\\n  \${ToggleGroupTypeBtn}, \${RemoveGroupBtn} {\\\\n    border-color: \${transparentize(ui4, 0.7)};\\\\n  }\\\\n\\\\n  opacity: \${inactiveOpacity};\\\\n\`;
+const ControlsContainer = styled.div \`\\\\n  display: flex;\\\\n  align-items: center;\\\\n  justify-content: left;\\\\n\\\\n  \${({ rootHovered }: OpacityContainerProps) => (rootHovered ? ControlsContainerWhenRootHovered : \`\`)}\\\\n\`;
+const ContainerWithRootHovered = css \`\\\\n  border: 1px solid \${transparentize(ui4, 0.7)};\\\\n\\\\n  &:hover {\\\\n    > \${StyledConditionRow} {\\\\n      opacity: 1;\\\\n    }\\\\n\\\\n    > \${ControlsContainer} {\\\\n      \${ToggleGroupTypeBtn}, \${RemoveGroupBtn} {\\\\n        border-color: \${ui5};\\\\n      }\\\\n\\\\n      opacity: 1;\\\\n    }\\\\n\\\\n    border: \${defaultBorderStyle};\\\\n  }\\\\n\`;
+const ContainerWithoutRootHovered = css \`\\\\n  border: \${defaultBorderStyle};\\\\n\`;
+const Container = styled.div \`\\\\n  padding: 38px \${distance.medium} \${distance.medium};\\\\n  margin-bottom: \${distance.medium};\\\\n  position: relative;\\\\n\\\\n  \${({ rootHovered }: OpacityContainerProps) => (rootHovered ? ContainerWithRootHovered : ContainerWithoutRootHovered)}\\\\n\`;
+const StyledIconLink = styled(IconLink) \`\\\\n  margin-right: \${distance.medium};\\\\n\`;
+const TypeSwitch = styled(ActionLink) \`\\\\n  padding: 5px;\\\\n  font-size: 12px;\\\\n  color: \${ui5};\\\\n\`;
+const RemoveIcon = styled(Icon) \`\\\\n  cursor: pointer;\\\\n\`;
+const defaultBaseCondition = {
+    fact: \\"\\",
+    operator: \\"equal\\",
+    value: \\"\\",
+};
+export class ConditionGroup extends React.Component<ConditionGroupProps> {
+    private tryToTranslate = (key: string) => {
+        const { translate } = this.props;
+        return (translate && translate(key)) || strings[key] || \`__missing__\${key}\`;
+    };
+    private removeCondition = (ref: Condition) => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions) {
+            const nextCondition = [...conditions];
+            for (const key in conditions) {
+                const condition = conditions[key];
+                if (condition === ref) {
+                    nextCondition.splice(parseInt(key, 10), 1);
+                }
+            }
+            changeCondition(conditions, nextCondition);
+        }
+    };
+    private addGroup = () => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions && Array.isArray(conditions)) {
+            changeCondition(conditions, [...conditions, { all: [] }]);
+        }
+    };
+    private removeGroup = (ref?: Condition) => {
+        const { conditions, changeCondition } = this.props;
+        if (ref && conditions && Array.isArray(conditions)) {
+            const nextCondition = [...conditions];
+            for (const key in conditions) {
+                const condition = conditions[key];
+                if (condition === ref) {
+                    nextCondition.splice(parseInt(key, 10), 1);
+                }
+            }
+            changeCondition(conditions, nextCondition);
+        }
+    };
+    private addCondition = (condition = { ...defaultBaseCondition }) => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions && Array.isArray(conditions)) {
+            changeCondition(conditions, [...conditions, condition]);
+        }
+    };
+    private handleTypeChange = (ref?: Condition) => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions && ref) {
+            const nextCondition = [...conditions];
+            const tempCondition = { ...ref };
+            for (const key in conditions) {
+                const condition = conditions[key] as Condition;
+                if (condition === ref) {
+                    if (condition.any) {
+                        nextCondition[key].all = tempCondition.all || tempCondition.any;
+                        delete nextCondition[key].any;
+                    }
+                    else {
+                        nextCondition[key].any = tempCondition.any || tempCondition.all;
+                        delete nextCondition[key].all;
+                    }
+                }
+            }
+            changeCondition(conditions, nextCondition);
+        }
+    };
+    private emptyCondition = () => {
+        const { conditions } = this.props;
+        return conditions && Object.keys(conditions).length <= 0;
+    };
+    private changeConditionProxy = (ref: Object, value?: any) => {
+        const { changeCondition } = this.props;
+        if (!this.emptyCondition()) {
+            changeCondition(ref, value);
+        }
+        else {
+            this.addCondition({ ...defaultBaseCondition, ...value });
+        }
+    };
+    private renderConditionRow = (condition: Condition, key: string) => {
+        const { operators, facts, translate, valueRenderer, rootHovered = false } = this.props;
+        return (<StyledConditionRow rootHovered={rootHovered} key={key}><ConditionRow tryToTranslate={this.tryToTranslate} operators={operators} condition={condition} onRemoveCondition={this.removeCondition} changeCondition={this.changeConditionProxy} translate={translate} valueRenderer={valueRenderer} facts={facts}/></StyledConditionRow>);
+    };
+    render(): JSX.Element {
+        const { facts, conditions, operators, onTypeClick, onRemoveGroup, type, root, rootHovered = false, maxLevels, level, ...rest } = this.props;
+        const showAddGroupBtn = !maxLevels ? true : level < maxLevels;
+        return (<Container rootHovered={rootHovered}>{conditions &&
+            conditions.map((condition: Condition, index) => condition.any || condition.all ? (<ConditionGroup key={\`condition-group-\${index}\`} facts={facts} conditions={condition.any || condition.all} operators={operators} onTypeClick={() => this.handleTypeChange(condition)} onRemoveGroup={() => this.removeGroup(condition)} type={condition.any ? \\"any\\" : \\"all\\"} root={false} rootHovered={rootHovered} maxLevels={maxLevels} level={level + 1} {...rest}/>) : (this.renderConditionRow(condition, \`condition-\${index}\`)))}{this.emptyCondition() && this.renderConditionRow({ ...defaultBaseCondition }, \\"ghost-condition\\")}<ControlsContainer rootHovered={rootHovered}><StyledIconLink icon=\\"Add\\" onClick={() => this.addCondition()}>{this.tryToTranslate(\\"condition\\")}</StyledIconLink>{showAddGroupBtn && (<StyledIconLink icon=\\"Add\\" onClick={this.addGroup}>{this.tryToTranslate(\\"group\\")}</StyledIconLink>)}{conditions && !root && onRemoveGroup && (<RemoveGroupBtn><RemoveIcon name=\\"Delete\\" onClick={() => onRemoveGroup(conditions)} color={ui5}/></RemoveGroupBtn>)}<ToggleGroupTypeBtn><TypeSwitch onClick={() => onTypeClick(conditions)}>{this.tryToTranslate(type)}</TypeSwitch></ToggleGroupTypeBtn></ControlsContainer></Container>);
+    }
+}
+"
+
+TypeScript after transform:
+
+"import * as React from 'react';
+import styled, { css } from '../../utils/styled';
+import { IconLink } from '../../components/IconLink';
+import { ActionLink } from '../../components/ActionLink';
+import { Condition } from './types';
+import { ui5, ui4 } from '../../colors';
+import { distance } from '../../distance';
+import { ConditionRow } from './ConditionRow.part';
+import { SharedRuleComponentProps } from './RuleEditor.types';
+import { strings } from './constants';
+import { Icon } from '../../components/Icon';
+import { transparentize } from '../../utils/colors';
+export interface ConditionGroupProps extends SharedRuleComponentProps {
+    level: number;
+    maxLevels?: number;
+    conditions?: Array<Condition>;
+    operators: Array<string>;
+    onTypeClick(ref?: Array<Condition>): void;
+    onRemoveGroup?(ref?: Array<Condition>): void;
+    type: string;
+    root: boolean;
+    rootHovered?: boolean;
+}
+export interface OpacityContainerProps {
+    rootHovered: boolean;
+}
+const inactiveOpacity = 0.5;
+const defaultBorderStyle = \`1px solid \${ui5}\`;
+const GroupButton = styled.div \`
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 22px;
+\`;
+const RemoveGroupBtn = GroupButton.extend \`
+  border-left: \${defaultBorderStyle};
+  border-bottom: \${defaultBorderStyle};
+  top: 0;
+  right: 0;
+\`;
+const ToggleGroupTypeBtn = GroupButton.extend \`
+  border-right: \${defaultBorderStyle};
+  border-bottom: \${defaultBorderStyle};
+  top: 0;
+  left: 0;
+\`;
+const ConditionRowWithRootHovered = css \`
+  opacity: \${inactiveOpacity};
+\`;
+const ConditionRowWithoutRootHovered = css \`
+  opacity: 1;
+\`;
+const StyledConditionRow = styled.div \`
+  \${({ rootHovered }: OpacityContainerProps) => rootHovered ? ConditionRowWithRootHovered : ConditionRowWithoutRootHovered}
+\`;
+const ControlsContainerWhenRootHovered = css \`
+  \${ToggleGroupTypeBtn}, \${RemoveGroupBtn} {
+    border-color: \${transparentize(ui4, 0.7)};
+  }
+
+  opacity: \${inactiveOpacity};
+\`;
+const ControlsContainer = styled.div \`
+  display: flex;
+  align-items: center;
+  justify-content: left;
+
+  \${({ rootHovered }: OpacityContainerProps) => (rootHovered ? ControlsContainerWhenRootHovered : \`\`)}
+\`;
+const ContainerWithRootHovered = css \`
+  border: 1px solid \${transparentize(ui4, 0.7)};
+
+  &:hover {
+    > \${StyledConditionRow} {
+      opacity: 1;
+    }
+
+    > \${ControlsContainer} {
+      \${ToggleGroupTypeBtn}, \${RemoveGroupBtn} {
+        border-color: \${ui5};
+      }
+
+      opacity: 1;
+    }
+
+    border: \${defaultBorderStyle};
+  }
+\`;
+const ContainerWithoutRootHovered = css \`
+  border: \${defaultBorderStyle};
+\`;
+const Container = styled.div \`
+  padding: 38px \${distance.medium} \${distance.medium};
+  margin-bottom: \${distance.medium};
+  position: relative;
+
+  \${({ rootHovered }: OpacityContainerProps) => (rootHovered ? ContainerWithRootHovered : ContainerWithoutRootHovered)}
+\`;
+const StyledIconLink = styled(IconLink) \`
+  margin-right: \${distance.medium};
+\`;
+const TypeSwitch = styled(ActionLink) \`
+  padding: 5px;
+  font-size: 12px;
+  color: \${ui5};
+\`;
+const RemoveIcon = styled(Icon) \`
+  cursor: pointer;
+\`;
+const defaultBaseCondition = {
+    fact: '',
+    operator: 'equal',
+    value: '',
+};
+export class ConditionGroup extends React.Component<ConditionGroupProps> {
+    private tryToTranslate = (key: string) => {
+        const { translate } = this.props;
+        return (translate && translate(key)) || strings[key] || \`__missing__\${key}\`;
+    };
+    private removeCondition = (ref: Condition) => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions) {
+            const nextCondition = [...conditions];
+            for (const key in conditions) {
+                const condition = conditions[key];
+                if (condition === ref) {
+                    nextCondition.splice(parseInt(key, 10), 1);
+                }
+            }
+            changeCondition(conditions, nextCondition);
+        }
+    };
+    private addGroup = () => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions && Array.isArray(conditions)) {
+            changeCondition(conditions, [...conditions, { all: [] }]);
+        }
+    };
+    private removeGroup = (ref?: Condition) => {
+        const { conditions, changeCondition } = this.props;
+        if (ref && conditions && Array.isArray(conditions)) {
+            const nextCondition = [...conditions];
+            for (const key in conditions) {
+                const condition = conditions[key];
+                if (condition === ref) {
+                    nextCondition.splice(parseInt(key, 10), 1);
+                }
+            }
+            changeCondition(conditions, nextCondition);
+        }
+    };
+    private addCondition = (condition = { ...defaultBaseCondition }) => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions && Array.isArray(conditions)) {
+            changeCondition(conditions, [...conditions, condition]);
+        }
+    };
+    private handleTypeChange = (ref?: Condition) => {
+        const { conditions, changeCondition } = this.props;
+        if (conditions && ref) {
+            const nextCondition = [...conditions];
+            const tempCondition = { ...ref };
+            for (const key in conditions) {
+                const condition = conditions[key] as Condition;
+                if (condition === ref) {
+                    if (condition.any) {
+                        nextCondition[key].all = tempCondition.all || tempCondition.any;
+                        delete nextCondition[key].any;
+                    }
+                    else {
+                        nextCondition[key].any = tempCondition.any || tempCondition.all;
+                        delete nextCondition[key].all;
+                    }
+                }
+            }
+            changeCondition(conditions, nextCondition);
+        }
+    };
+    private emptyCondition = () => {
+        const { conditions } = this.props;
+        return conditions && Object.keys(conditions).length <= 0;
+    };
+    private changeConditionProxy = (ref: Object, value?: any) => {
+        const { changeCondition } = this.props;
+        if (!this.emptyCondition()) {
+            changeCondition(ref, value);
+        }
+        else {
+            this.addCondition({ ...defaultBaseCondition, ...value });
+        }
+    };
+    private renderConditionRow = (condition: Condition, key: string) => {
+        const { operators, facts, translate, valueRenderer, rootHovered = false } = this.props;
+        return (<StyledConditionRow rootHovered={rootHovered} key={key}>
+        <ConditionRow tryToTranslate={this.tryToTranslate} operators={operators} condition={condition} onRemoveCondition={this.removeCondition} changeCondition={this.changeConditionProxy} translate={translate} valueRenderer={valueRenderer} facts={facts}/>
+      </StyledConditionRow>);
+    };
+    render(): JSX.Element {
+        const { facts, conditions, operators, onTypeClick, onRemoveGroup, type, root, rootHovered = false, maxLevels, level, ...rest } = this.props;
+        const showAddGroupBtn = !maxLevels ? true : level < maxLevels;
+        return (<Container rootHovered={rootHovered}>
+        {conditions &&
+            conditions.map((condition: Condition, index) => condition.any || condition.all ? (<ConditionGroup key={\`condition-group-\${index}\`} facts={facts} conditions={condition.any || condition.all} operators={operators} onTypeClick={() => this.handleTypeChange(condition)} onRemoveGroup={() => this.removeGroup(condition)} type={condition.any ? 'any' : 'all'} root={false} rootHovered={rootHovered} maxLevels={maxLevels} level={level + 1} {...rest}/>) : (this.renderConditionRow(condition, \`condition-\${index}\`)))}
+        {this.emptyCondition() && this.renderConditionRow({ ...defaultBaseCondition }, 'ghost-condition')}
+        <ControlsContainer rootHovered={rootHovered}>
+          <StyledIconLink icon=\\"Add\\" onClick={() => this.addCondition()}>
+            {this.tryToTranslate('condition')}
+          </StyledIconLink>
+          {showAddGroupBtn && (<StyledIconLink icon=\\"Add\\" onClick={this.addGroup}>
+              {this.tryToTranslate('group')}
+            </StyledIconLink>)}
+          {conditions && !root && onRemoveGroup && (<RemoveGroupBtn>
+              <RemoveIcon name=\\"Delete\\" onClick={() => onRemoveGroup(conditions)} color={ui5}/>
+            </RemoveGroupBtn>)}
+          <ToggleGroupTypeBtn>
+            <TypeSwitch onClick={() => onTypeClick(conditions)}>{this.tryToTranslate(type)}</TypeSwitch>
+          </ToggleGroupTypeBtn>
+        </ControlsContainer>
+      </Container>);
+    }
+    static inner: {
+        readonly StyledConditionRow: typeof StyledConditionRow;
+        readonly ConditionRow: typeof ConditionRow;
+        readonly Container: typeof Container;
+        readonly ControlsContainer: typeof ControlsContainer;
+        readonly StyledIconLink: typeof StyledIconLink;
+        readonly RemoveGroupBtn: typeof RemoveGroupBtn;
+        readonly RemoveIcon: typeof RemoveIcon;
+        readonly ToggleGroupTypeBtn: typeof ToggleGroupTypeBtn;
+        readonly TypeSwitch: typeof TypeSwitch;
+    };
+}
+ConditionGroup.inner = {
+    get StyledConditionRow() { return StyledConditionRow as typeof StyledConditionRow; },
+    get ConditionRow() { return ConditionRow as typeof ConditionRow; },
+    get Container() { return Container as typeof Container; },
+    get ControlsContainer() { return ControlsContainer as typeof ControlsContainer; },
+    get StyledIconLink() { return StyledIconLink as typeof StyledIconLink; },
+    get RemoveGroupBtn() { return RemoveGroupBtn as typeof RemoveGroupBtn; },
+    get RemoveIcon() { return RemoveIcon as typeof RemoveIcon; },
+    get ToggleGroupTypeBtn() { return ToggleGroupTypeBtn as typeof ToggleGroupTypeBtn; },
+    get TypeSwitch() { return TypeSwitch as typeof TypeSwitch; }
+};
+"
+
+
+`;
+
+exports[`sample4.tsx: sample4.tsx 1`] = `
+
+File: sample4.tsx
+Source code:
+
+"import * as React from 'react';
+import styled, { themed } from '../../utils/styled';
+import { StandardProps } from '../../common';
+import { distance } from '../../distance';
+
+export interface BadgeProps extends StandardProps {
+  /**
+   * The content of the badge to display.
+   */
+  children?: React.ReactNode;
+  /**
+   * Sets the mode to a filling badge. Useful together with the \`Avatar\`.
+   * By default false.
+   * @default false
+   */
+  fill?: boolean;
+}
+
+const BasicBadge = styled.div\`
+  position: relative;
+  border-radius: 0.25em;
+  text-align: center;
+\`;
+
+const FilledBadge = BasicBadge.extend\`
+  color: \${themed(({ theme }) => theme.badgeBackground)};
+  background: \${themed(({ theme }) => theme.badgeColor)};
+\`;
+
+const NormalBadge = BasicBadge.extend\`
+  display: inline-block;
+  color: \${themed(({ theme }) => theme.badgeColor)};
+  background: \${themed(({ theme }) => theme.badgeBackground)};
+  font-size: 0.7em;
+  line-height: 1.55;
+  min-width: 2em;
+  padding: 0 \${distance.xsmall};
+  border: solid 1px \${themed(({ theme }) => theme.badgeColor)};
+\`;
+
+/**
+ * The badge component is a simple informative display.
+ */
+export const Badge: React.SFC<BadgeProps> = ({ fill = false, ...props }) =>
+  fill ? <FilledBadge {...props} /> : <NormalBadge {...props} />;
+Badge.displayName = 'Badge';
+"
+
+TypeScript before transform:
+
+"import * as React from \\"react\\";
+import styled, { themed } from \\"../../utils/styled\\";
+import { StandardProps } from \\"../../common\\";
+import { distance } from \\"../../distance\\";
+export interface BadgeProps extends StandardProps {
+    /**
+     * The content of the badge to display.
+     */
+    children?: React.ReactNode;
+    /**
+     * Sets the mode to a filling badge. Useful together with the \`Avatar\`.
+     * By default false.
+     * @default false
+     */
+    fill?: boolean;
+}
+const BasicBadge = styled.div \`\\\\n  position: relative;\\\\n  border-radius: 0.25em;\\\\n  text-align: center;\\\\n\`;
+const FilledBadge = BasicBadge.extend \`\\\\n  color: \${themed(({ theme }) => theme.badgeBackground)};\\\\n  background: \${themed(({ theme }) => theme.badgeColor)};\\\\n\`;
+const NormalBadge = BasicBadge.extend \`\\\\n  display: inline-block;\\\\n  color: \${themed(({ theme }) => theme.badgeColor)};\\\\n  background: \${themed(({ theme }) => theme.badgeBackground)};\\\\n  font-size: 0.7em;\\\\n  line-height: 1.55;\\\\n  min-width: 2em;\\\\n  padding: 0 \${distance.xsmall};\\\\n  border: solid 1px \${themed(({ theme }) => theme.badgeColor)};\\\\n\`;
+/**
+ * The badge component is a simple informative display.
+ */
+export const Badge: React.SFC<BadgeProps> = ({ fill = false, ...props }) => fill ? <FilledBadge {...props}/> : <NormalBadge {...props}/>;
+Badge.displayName = \\"Badge\\";
+"
+
+TypeScript after transform:
+
+"import * as React from 'react';
+import styled, { themed } from '../../utils/styled';
+import { StandardProps } from '../../common';
+import { distance } from '../../distance';
+export interface BadgeProps extends StandardProps {
+    /**
+     * The content of the badge to display.
+     */
+    children?: React.ReactNode;
+    /**
+     * Sets the mode to a filling badge. Useful together with the \`Avatar\`.
+     * By default false.
+     * @default false
+     */
+    fill?: boolean;
+}
+const BasicBadge = styled.div \`
+  position: relative;
+  border-radius: 0.25em;
+  text-align: center;
+\`;
+const FilledBadge = BasicBadge.extend \`
+  color: \${themed(({ theme }) => theme.badgeBackground)};
+  background: \${themed(({ theme }) => theme.badgeColor)};
+\`;
+const NormalBadge = BasicBadge.extend \`
+  display: inline-block;
+  color: \${themed(({ theme }) => theme.badgeColor)};
+  background: \${themed(({ theme }) => theme.badgeBackground)};
+  font-size: 0.7em;
+  line-height: 1.55;
+  min-width: 2em;
+  padding: 0 \${distance.xsmall};
+  border: solid 1px \${themed(({ theme }) => theme.badgeColor)};
+\`;
+/**
+ * The badge component is a simple informative display.
+ */
+export const Badge = ((({ fill = false, ...props }) => fill ? <FilledBadge {...props}/> : <NormalBadge {...props}/>) as React.SFC<BadgeProps> & {
+    inner: {
+        readonly FilledBadge: typeof FilledBadge;
+        readonly NormalBadge: typeof NormalBadge;
+    };
+});
+Badge.inner = {
+    get FilledBadge() { return FilledBadge as typeof FilledBadge; },
+    get NormalBadge() { return NormalBadge as typeof NormalBadge; }
+};
+Badge.displayName = 'Badge';
+"
+
+
+`;
