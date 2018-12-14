@@ -5,11 +5,11 @@ exports[`sample1.tsx: sample1.tsx 1`] = `
 File: sample1.tsx
 Source code:
 
-"import * as React from \\"react\\";
+"import * as React from 'react';
 
-import Component2, { Component as Component3 } from \\"library\\";
+import Component2, { Component as Component3 } from 'library';
 
-import Component from \\"./Component\\";
+import Component from './Component';
 
 interface ButtonProps {}
 
@@ -48,9 +48,9 @@ const Component4 = () => <div />;
 
 TypeScript after transform:
 
-"import * as React from \\"react\\";
-import Component2, { Component as Component3 } from \\"library\\";
-import Component from \\"./Component\\";
+"import * as React from 'react';
+import Component2, { Component as Component3 } from 'library';
+import Component from './Component';
 interface ButtonProps {
 }
 const Button = ((() => {
@@ -89,11 +89,11 @@ exports[`sample2.tsx: sample2.tsx 1`] = `
 File: sample2.tsx
 Source code:
 
-"import * as React from \\"react\\";
+"import * as React from 'react';
 
-import Component2, { Component as Component3 } from \\"library\\";
+import Component2, { Component as Component3 } from 'library';
 
-import Component from \\"./Component\\";
+import Component from './Component';
 
 interface ButtonProps {}
 
@@ -135,9 +135,9 @@ const Component4 = () => <div />;
 
 TypeScript after transform:
 
-"import * as React from \\"react\\";
-import Component2, { Component as Component3 } from \\"library\\";
-import Component from \\"./Component\\";
+"import * as React from 'react';
+import Component2, { Component as Component3 } from 'library';
+import Component from './Component';
 interface ButtonProps {
 }
 class Button extends React.Component {
