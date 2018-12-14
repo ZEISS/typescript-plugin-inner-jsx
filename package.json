@@ -1,35 +1,45 @@
 {
   "name": "typescript-plugin-inner-jsx",
   "version": "0.1.0",
-  "description": "Typescript transformer which adds references to inner JSX components to parent React components",
+  "description": "Typescript transformer which adds references to inner JSX components to parent React components.",
   "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ZEISS/typescript-plugin-inner-jsx.git"
+  },
   "scripts": {
     "build": "tsc --outDir dist",
     "build:prod": "tsc --outDir dist --sourceMap false",
-    "test:baselines": "jest --config ./jest.config.json",
+    "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'",
+    "test:unit": "jest --config ./jest.config.json",
     "test:watch": "npm run test:baselines -- --watch",
-    "test": "npm run test:baselines",
+    "test": "npm run test:lint && npm run test:unit",
     "start": "ts-node src/index.ts",
     "watch": "nodemon --exec ts-node -- src/index.ts",
+    "prettier": "prettier --config prettier.config.js --write src/**/*.{ts,tsx}",
     "runner": "ts-node ./src/runner.ts"
   },
-  "typings": "dist/index.d.ts",
   "author": {
     "name": "DCC Team",
     "email": "portal@zeiss.com",
     "url": "https://portal.zeiss.com"
   },
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "typescript": "^3.2.1",
     "@phenomnomnominal/tsquery": "^3.0.0",
     "@types/jest": "^23.3.10",
     "@types/node": "^10.12.12",
     "jest": "^23.6.0",
     "nodemon": "^1.18.7",
+    "prettier": "^1.15.3",
     "ts-is-kind": "^1.0.0",
     "ts-jest": "^23.10.5",
-    "ts-node": "^7.0.1"
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.17.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.2.1"
   },
   "files": [
     "dist"
