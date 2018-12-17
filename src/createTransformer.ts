@@ -1,29 +1,27 @@
 import {
   ClassDeclaration,
+  Expression,
+  Identifier,
   Node,
   SourceFile,
   Statement,
   SyntaxKind,
   TransformerFactory,
-  TypeLiteralNode,
   VariableStatement,
   Visitor,
   createAsExpression,
-  createBinary,
   createBlock,
+  createCall,
   createGetAccessor,
   createIdentifier,
-  createIntersectionTypeNode,
   createNodeArray,
   createObjectLiteral,
   createParen,
   createProperty,
   createPropertyAccess,
-  createPropertySignature,
+  createPropertyAssignment,
   createReturn,
-  createStatement,
   createToken,
-  createTypeLiteralNode,
   createTypeQueryNode,
   isArrowFunction,
   isBlock,
@@ -57,7 +55,7 @@ import {
 } from 'typescript';
 
 interface Dict {
-  [name: string]: string;
+  [name: string]: Identifier;
 }
 
 /**
@@ -73,16 +71,16 @@ function getImports(node: Node) {
   if (isImportDeclaration(node) && node.importClause) {
     const { importClause } = node;
     if (importClause.name) {
-      imports[importClause.name.text] = importClause.name.text;
+      imports[importClause.name.text] = importClause.name;
     }
 
     if (importClause.namedBindings) {
       const { namedBindings } = importClause;
       if (isNamespaceImport(namedBindings) && namedBindings.name.text !== 'from') {
-        imports[namedBindings.name.text] = namedBindings.name.text;
+        imports[namedBindings.name.text] = namedBindings.name;
       } else if (isNamedImports(namedBindings)) {
         namedBindings.elements.forEach(importSpecifier => {
-          imports[importSpecifier.name.text] = importSpecifier.name.text;
+          imports[importSpecifier.name.text] = importSpecifier.name;
         });
       }
     }
@@ -100,11 +98,11 @@ function getVariables(node: Node): Dict {
   if (isVariableStatement(node)) {
     node.declarationList.declarations.forEach(({ name }) => {
       if (isIdentifier(name)) {
-        variables[name.text] = name.text;
+        variables[name.text] = name;
       } else if (isObjectBindingPattern(name)) {
         name.elements.forEach(({ name }) => {
           if (isIdentifier(name)) {
-            variables[name.text] = name.text;
+            variables[name.text] = name;
           }
         });
       }
@@ -120,7 +118,7 @@ function getVariables(node: Node): Dict {
  */
 function getFunctionName(node: Node) {
   if (isFunctionDeclaration(node) && node.name) {
-    return node.name.text;
+    return node.name;
   }
 
   return undefined;
@@ -132,7 +130,7 @@ function getFunctionName(node: Node) {
  */
 function getClassName(node: Node) {
   if (isClassDeclaration(node) && node.name) {
-    return node.name.text;
+    return node.name;
   }
 
   return undefined;
@@ -211,12 +209,12 @@ function getScope(node: Node) {
 
     const functionName = getFunctionName(cbNode);
     if (functionName) {
-      dict[functionName] = functionName;
+      dict[functionName.text] = functionName;
     }
 
     const className = getClassName(cbNode);
     if (className) {
-      dict[className] = className;
+      dict[className.text] = className;
     }
 
     dict = {
@@ -231,32 +229,9 @@ function getScope(node: Node) {
 }
 
 /**
- * Creates types of the inner object:
- * {
- *     readonly A: typeof A;
- *     readonly B: typeof B;
- *     readonly C: typeof C;
- * }
- * @param jsxTags
- */
-function createInnerType(jsxTags: Array<string>) {
-  return createTypeLiteralNode(
-    jsxTags.map(tag =>
-      createPropertySignature(
-        [createToken(SyntaxKind.ReadonlyKeyword)],
-        tag,
-        undefined,
-        createTypeQueryNode(createIdentifier(tag)),
-        undefined,
-      ),
-    ),
-  );
-}
-
-/**
  * Creates an inner object from available jsx tags list:
  *
- * ComponentName.inner = {
+ * {
  *     get A() { return A as typeof A; },
  *     get B() { return B as typeof B; },
  *     get C() { return C as typeof C; },
@@ -264,27 +239,19 @@ function createInnerType(jsxTags: Array<string>) {
  *
  * @param jsxTags
  */
-function createInnerValue(name: string, jsxTags: Array<string>) {
-  return createStatement(
-    createBinary(
-      createPropertyAccess(createIdentifier(name), 'inner'),
-      SyntaxKind.EqualsToken,
-      createObjectLiteral(
-        jsxTags.map(tag =>
-          createGetAccessor(
-            undefined,
-            undefined,
-            tag,
-            [],
-            undefined,
-            createBlock([
-              createReturn(createAsExpression(createIdentifier(tag), createTypeQueryNode(createIdentifier(tag)))),
-            ]),
-          ),
-        ),
-        true,
+function createInner(jsxTags: Array<Identifier>) {
+  return createObjectLiteral(
+    jsxTags.map(tag =>
+      createGetAccessor(
+        undefined,
+        undefined,
+        tag.text,
+        [],
+        undefined,
+        createBlock([createReturn(createAsExpression(tag, createTypeQueryNode(tag)))]),
       ),
     ),
+    true,
   );
 }
 
@@ -315,7 +282,7 @@ function buildJsxMap(
   node: Node,
   reactStatement?: Node,
   scopeVariables?: Dict,
-  result = new Map<Node, { [tag: string]: string }>(),
+  result = new Map<Node, { [tag: string]: Identifier }>(),
 ) {
   node.forEachChild(child => {
     if (!child.parent) {
@@ -329,7 +296,7 @@ function buildJsxMap(
         if (scopeVariables[text]) {
           result.set(reactStatement, {
             ...result.get(reactStatement),
-            [text]: text,
+            [text]: scopeVariables[text],
           });
         }
       }
@@ -359,19 +326,21 @@ function buildJsxMap(
  *       return <InnerComponent />
  *   }
  *
- *   static inner: { readonly InnerComponent: typeof InnerComponent }
+ *   static inner = {
+ *       get Component(){ return Component; }
+ *   }
  * }
  * @param statement
  * @param type
  */
-function updateReactClassStatement(statement: ClassDeclaration, type: TypeLiteralNode) {
+function updateReactClassStatement(statement: ClassDeclaration, inner: Expression) {
   const property = createProperty(
     undefined,
     [createToken(SyntaxKind.StaticKeyword)],
     'inner',
     undefined,
-    type,
     undefined,
+    inner,
   );
 
   const members = createNodeArray([...statement.members, property]);
@@ -387,17 +356,17 @@ function updateReactClassStatement(statement: ClassDeclaration, type: TypeLitera
 }
 
 /**
- * Moves type from variable decalration to "as"
+ * Updates React variable decalration
  *
  * const Component: React.SFC<{}> = () => <InnerComponent />
  *
  * ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
  *
- * const Component = (() => <InnerComponent />) as React.SFC<{}> & { inner: { readonly InnerComponent: typeof InnerComponent } }
+ * const Component = Object.assign(() => <InnerComponent />) as React.SFC<{}>, { inner: { get Component(){ return Component; } } } }
  * @param statement
  * @param type
  */
-function updateReactVariableStatement(statement: VariableStatement, type: TypeLiteralNode) {
+function updateReactVariableStatement(statement: VariableStatement, inner: Expression) {
   const { declarationList, modifiers } = statement;
   const variableDeclaration = declarationList.declarations[0];
 
@@ -417,13 +386,10 @@ function updateReactVariableStatement(statement: VariableStatement, type: TypeLi
         variableDeclaration,
         variableDeclaration.name,
         undefined,
-        createAsExpression(
-          createParen(variableDeclaration.initializer),
-          createIntersectionTypeNode([
-            variableDeclaration.type,
-            createTypeLiteralNode([createPropertySignature(undefined, 'inner', undefined, type, undefined)]),
-          ]),
-        ),
+        createCall(createPropertyAccess(createIdentifier('Object'), createIdentifier('assign')), undefined, [
+          createAsExpression(createParen(variableDeclaration.initializer), variableDeclaration.type),
+          createObjectLiteral([createPropertyAssignment('inner', inner)]),
+        ]),
       ),
     ]),
   );
@@ -442,34 +408,24 @@ export function createTransformer(): TransformerFactory<SourceFile> {
 
         let updatedNode = node;
         if (isBlock(node) || isDefaultClause(node) || isModuleBlock(node) || isSourceFile(node)) {
-          const statements = node.statements.reduce<Array<Statement>>((statements, statement) => {
+          const statements = node.statements.map<Statement>(statement => {
             if (jsxMap.has(statement)) {
-              const jsxTags = Object.keys(jsxMap.get(statement) as {});
-              if (jsxTags.length) {
-                let name;
-                const type = createInnerType(jsxTags);
-                if (isReactClass(statement)) {
-                  name = getClassName(statement);
-                  statements.push(updateReactClassStatement(statement, type));
-                } else if (isReactFunctionDeclaration(statement)) {
-                  const variableDecalration = statement.declarationList.declarations[0];
-                  if (isIdentifier(variableDecalration.name)) {
-                    name = variableDecalration.name.text;
-                  }
-                  statements.push(updateReactVariableStatement(statement, type));
-                }
+              const jsxTags = Object.keys(jsxMap.get(statement) as any).map<Identifier>(
+                key => (jsxMap.get(statement) as any)[key],
+              );
 
-                if (name) {
-                  statements.push(createInnerValue(name, jsxTags));
+              if (jsxTags.length) {
+                const inner = createInner(jsxTags);
+                if (isReactClass(statement)) {
+                  return updateReactClassStatement(statement, inner);
+                } else if (isReactFunctionDeclaration(statement)) {
+                  return updateReactVariableStatement(statement, inner);
                 }
-              } else {
-                statements.push(statement);
               }
-            } else {
-              statements.push(statement);
             }
-            return statements;
-          }, []);
+
+            return statement;
+          });
 
           if (isBlock(node)) {
             updatedNode = updateBlock(node, statements);

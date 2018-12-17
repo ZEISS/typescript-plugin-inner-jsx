@@ -53,7 +53,7 @@ import Component2, { Component as Component3 } from 'library';
 import Component from './Component';
 interface ButtonProps {
 }
-const Button = ((() => {
+const Button = Object.assign(((() => {
     const Component5 = () => <div />;
     return (<div>
       <Component2>
@@ -64,20 +64,12 @@ const Button = ((() => {
         </Component>
       </Component2>
     </div>);
-}) as React.SFC<ButtonProps> & {
-    inner: {
-        readonly Component2: typeof Component2;
-        readonly Component3: typeof Component3;
-        readonly Component: typeof Component;
-        readonly Component4: typeof Component4;
-    };
-});
-Button.inner = {
-    get Component2() { return Component2 as typeof Component2; },
-    get Component3() { return Component3 as typeof Component3; },
-    get Component() { return Component as typeof Component; },
-    get Component4() { return Component4 as typeof Component4; }
-};
+}) as React.SFC<ButtonProps>), { inner: {
+        get Component2() { return Component2 as typeof Component2; },
+        get Component3() { return Component3 as typeof Component3; },
+        get Component() { return Component as typeof Component; },
+        get Component4() { return Component4 as typeof Component4; }
+    } });
 const Component4 = () => <div />;
 "
 
@@ -153,19 +145,13 @@ class Button extends React.Component {
         </Component2>
       </div>);
     }
-    static inner: {
-        readonly Component2: typeof Component2;
-        readonly Component3: typeof Component3;
-        readonly Component: typeof Component;
-        readonly Component4: typeof Component4;
+    static inner = {
+        get Component2() { return Component2 as typeof Component2; },
+        get Component3() { return Component3 as typeof Component3; },
+        get Component() { return Component as typeof Component; },
+        get Component4() { return Component4 as typeof Component4; }
     };
 }
-Button.inner = {
-    get Component2() { return Component2 as typeof Component2; },
-    get Component3() { return Component3 as typeof Component3; },
-    get Component() { return Component as typeof Component; },
-    get Component4() { return Component4 as typeof Component4; }
-};
 const Component4 = () => <div />;
 "
 
@@ -857,29 +843,18 @@ export class ConditionGroup extends React.Component<ConditionGroupProps> {
         </ControlsContainer>
       </Container>);
     }
-    static inner: {
-        readonly StyledConditionRow: typeof StyledConditionRow;
-        readonly ConditionRow: typeof ConditionRow;
-        readonly Container: typeof Container;
-        readonly ControlsContainer: typeof ControlsContainer;
-        readonly StyledIconLink: typeof StyledIconLink;
-        readonly RemoveGroupBtn: typeof RemoveGroupBtn;
-        readonly RemoveIcon: typeof RemoveIcon;
-        readonly ToggleGroupTypeBtn: typeof ToggleGroupTypeBtn;
-        readonly TypeSwitch: typeof TypeSwitch;
+    static inner = {
+        get StyledConditionRow() { return StyledConditionRow as typeof StyledConditionRow; },
+        get ConditionRow() { return ConditionRow as typeof ConditionRow; },
+        get Container() { return Container as typeof Container; },
+        get ControlsContainer() { return ControlsContainer as typeof ControlsContainer; },
+        get StyledIconLink() { return StyledIconLink as typeof StyledIconLink; },
+        get RemoveGroupBtn() { return RemoveGroupBtn as typeof RemoveGroupBtn; },
+        get RemoveIcon() { return RemoveIcon as typeof RemoveIcon; },
+        get ToggleGroupTypeBtn() { return ToggleGroupTypeBtn as typeof ToggleGroupTypeBtn; },
+        get TypeSwitch() { return TypeSwitch as typeof TypeSwitch; }
     };
 }
-ConditionGroup.inner = {
-    get StyledConditionRow() { return StyledConditionRow as typeof StyledConditionRow; },
-    get ConditionRow() { return ConditionRow as typeof ConditionRow; },
-    get Container() { return Container as typeof Container; },
-    get ControlsContainer() { return ControlsContainer as typeof ControlsContainer; },
-    get StyledIconLink() { return StyledIconLink as typeof StyledIconLink; },
-    get RemoveGroupBtn() { return RemoveGroupBtn as typeof RemoveGroupBtn; },
-    get RemoveIcon() { return RemoveIcon as typeof RemoveIcon; },
-    get ToggleGroupTypeBtn() { return ToggleGroupTypeBtn as typeof ToggleGroupTypeBtn; },
-    get TypeSwitch() { return TypeSwitch as typeof TypeSwitch; }
-};
 "
 
 
@@ -1006,16 +981,10 @@ const NormalBadge = BasicBadge.extend \`
 /**
  * The badge component is a simple informative display.
  */
-export const Badge = ((({ fill = false, ...props }) => fill ? <FilledBadge {...props}/> : <NormalBadge {...props}/>) as React.SFC<BadgeProps> & {
-    inner: {
-        readonly FilledBadge: typeof FilledBadge;
-        readonly NormalBadge: typeof NormalBadge;
-    };
-});
-Badge.inner = {
-    get FilledBadge() { return FilledBadge as typeof FilledBadge; },
-    get NormalBadge() { return NormalBadge as typeof NormalBadge; }
-};
+export const Badge = Object.assign(((({ fill = false, ...props }) => fill ? <FilledBadge {...props}/> : <NormalBadge {...props}/>) as React.SFC<BadgeProps>), { inner: {
+        get FilledBadge() { return FilledBadge as typeof FilledBadge; },
+        get NormalBadge() { return NormalBadge as typeof NormalBadge; }
+    } });
 Badge.displayName = 'Badge';
 "
 
