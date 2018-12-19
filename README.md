@@ -54,11 +54,11 @@ The following command adds the packages to the project as a development-time dep
 
 Right now, one of the rough edges of TypeScript custom transforms is in how they are used ([hopefully to be resolved soon](https://github.com/Microsoft/TypeScript/issues/14419)). At least at the time of writing (December 2018), there are no compiler options (for command line or tsconfig.json) for specifying transforms, so typically the compiler API must be used to run transforms.
 
-To build with transformer please use provided custom compiler `bin/build`.
+To build with transformer please use provided custom compiler `build-with-transform-jsx`.
 
 Example:
 ```
-./node_modules/typescript-plugin-inner-jsx/bin/build -t es5 --outDir dist/es5 --declaration --inlineSourceMap --inlineSources --config ./tsconfig.json
+build-with-transform-jsx -t es5 --outDir dist/es5 --declaration --inlineSourceMap --inlineSources --config ./tsconfig.json
 ```
 
 ## Integration with `Webpack`
