@@ -1,5 +1,7 @@
 # Typescript Inner JSX Plugin Changelog
 
+## 0.1.3
+
 ## 0.1.2
 
 - Custom compiler added.

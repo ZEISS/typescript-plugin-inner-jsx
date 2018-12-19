@@ -1,6 +1,6 @@
 {
   "name": "typescript-plugin-inner-jsx",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Typescript transformer which adds references to inner JSX components to parent React components.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -44,6 +44,7 @@
     "typescript": "^3.2.2"
   },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ]
 }
