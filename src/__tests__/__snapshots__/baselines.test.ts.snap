@@ -13,20 +13,25 @@ import Component from './Component';
 
 interface ButtonProps {}
 
-const Button: React.SFC<ButtonProps> = () => {
-  const Component5 = () => <div />;
+const hoc = SuperComponent => {
+  const Button: React.SFC<ButtonProps> = () => {
+    const Component5 = () => <div />;
 
-  return (
-    <div>
-      <Component2>
-        <Component3 />
-        <Component>
-          <Component5 />
-          <Component4 />
-        </Component>
-      </Component2>
-    </div>
-  );
+    return (
+      <div>
+        <SuperComponent />
+        <Component2>
+          <Component3 />
+          <Component>
+            <Component5 />
+            <Component4 />
+          </Component>
+        </Component2>
+      </div>
+    );
+  };
+
+  return Button;
 };
 
 const Component4 = () => <div />;
@@ -39,9 +44,12 @@ import Component2, { Component as Component3 } from \\"library\\";
 import Component from \\"./Component\\";
 interface ButtonProps {
 }
-const Button: React.SFC<ButtonProps> = () => {
-    const Component5 = () => <div />;
-    return (<div><Component2><Component3 /><Component><Component5 /><Component4 /></Component></Component2></div>);
+const hoc = SuperComponent => {
+    const Button: React.SFC<ButtonProps> = () => {
+        const Component5 = () => <div />;
+        return (<div><SuperComponent /><Component2><Component3 /><Component><Component5 /><Component4 /></Component></Component2></div>);
+    };
+    return Button;
 };
 const Component4 = () => <div />;
 "
@@ -53,23 +61,28 @@ import Component2, { Component as Component3 } from 'library';
 import Component from './Component';
 interface ButtonProps {
 }
-const Button = Object.assign(((() => {
-    const Component5 = () => <div />;
-    return (<div>
-      <Component2>
-        <Component3 />
-        <Component>
-          <Component5 />
-          <Component4 />
-        </Component>
-      </Component2>
-    </div>);
-}) as React.SFC<ButtonProps>), { inner: {
-        get Component2() { return Component2 as typeof Component2; },
-        get Component3() { return Component3 as typeof Component3; },
-        get Component() { return Component as typeof Component; },
-        get Component4() { return Component4 as typeof Component4; }
-    } });
+const hoc = SuperComponent => {
+    const Button = Object.assign(((() => {
+        const Component5 = () => <div />;
+        return (<div>
+        <SuperComponent />
+        <Component2>
+          <Component3 />
+          <Component>
+            <Component5 />
+            <Component4 />
+          </Component>
+        </Component2>
+      </div>);
+    }) as React.SFC<ButtonProps>), { inner: {
+            get SuperComponent() { return SuperComponent as typeof SuperComponent; },
+            get Component2() { return Component2 as typeof Component2; },
+            get Component3() { return Component3 as typeof Component3; },
+            get Component() { return Component as typeof Component; },
+            get Component4() { return Component4 as typeof Component4; }
+        } });
+    return Button;
+};
 const Component4 = () => <div />;
 "
 

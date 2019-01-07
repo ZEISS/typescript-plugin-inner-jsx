@@ -90,6 +90,23 @@ function getImports(node: Node) {
 }
 
 /**
+ * Gets function parameters
+ * @param node
+ */
+function getFunctionParameters(node: Node) {
+  const parameters: Dict = {};
+  if (node && (isFunctionExpression(node) || isArrowFunction(node))) {
+    node.parameters.forEach(parameter => {
+      if (isIdentifier(parameter.name)) {
+        parameters[parameter.name.text] = parameter.name;
+      }
+    });
+  }
+
+  return parameters;
+}
+
+/**
  * Gets all node's variable names
  * @param node
  */
@@ -221,9 +238,11 @@ function getScope(node: Node) {
       ...dict,
       ...getImports(cbNode),
       ...getVariables(cbNode),
-      ...getScope(node.parent),
+      ...getFunctionParameters(cbNode.parent),
     };
   });
+
+  dict = { ...dict, ...getScope(node.parent) };
 
   return dict;
 }

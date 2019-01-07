@@ -6,20 +6,25 @@ import Component from './Component';
 
 interface ButtonProps {}
 
-const Button: React.SFC<ButtonProps> = () => {
-  const Component5 = () => <div />;
+const hoc = SuperComponent => {
+  const Button: React.SFC<ButtonProps> = () => {
+    const Component5 = () => <div />;
 
-  return (
-    <div>
-      <Component2>
-        <Component3 />
-        <Component>
-          <Component5 />
-          <Component4 />
-        </Component>
-      </Component2>
-    </div>
-  );
+    return (
+      <div>
+        <SuperComponent />
+        <Component2>
+          <Component3 />
+          <Component>
+            <Component5 />
+            <Component4 />
+          </Component>
+        </Component2>
+      </div>
+    );
+  };
+
+  return Button;
 };
 
 const Component4 = () => <div />;
