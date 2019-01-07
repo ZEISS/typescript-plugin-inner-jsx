@@ -1,5 +1,9 @@
 # Typescript Inner JSX Plugin Changelog
 
+## 0.1.6
+
+- Function declaration parameters added to the variable scope.
+
 ## 0.1.5
 
 - Inner object now contains components which come from parent function parameters (HOC components).

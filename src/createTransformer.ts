@@ -95,7 +95,7 @@ function getImports(node: Node) {
  */
 function getFunctionParameters(node: Node) {
   const parameters: Dict = {};
-  if (node && (isFunctionExpression(node) || isArrowFunction(node))) {
+  if (node && (isFunctionDeclaration(node) || isFunctionExpression(node) || isArrowFunction(node))) {
     node.parameters.forEach(parameter => {
       if (isIdentifier(parameter.name)) {
         parameters[parameter.name.text] = parameter.name;
