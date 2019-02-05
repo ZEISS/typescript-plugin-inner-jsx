@@ -1,5 +1,9 @@
 # Typescript Inner JSX Plugin Changelog
 
+## 0.1.7
+
+- Implemented HOC for adding inner structure to the component.
+
 ## 0.1.6
 
 - Function declaration parameters added to the variable scope.
