@@ -149,6 +149,26 @@ To solve this please refer to [Forked process configuration](#forked-process-con
 function createTransformer(): TransformerFactory<SourceFile>;
 ```
 
+## High order component
+
+Package also imports a High order component which adds inner structure to the wrapped Component.
+
+Example:
+```ts
+import { withInner } from 'typescript-plugin-inner-jsx/withInner';
+
+const Parent = () => (
+  <div>
+    <Child1 />
+    <Child2 />
+  </div>
+);
+
+const ParentWithInner = withInner(Parent, { Child1, Child2 });
+
+ParentWithInner.inner.Child1 === Child1; // true
+```
+
 A factory that creates an instance of a TypeScript transformer (which is a factory itself).
 
 ## License

@@ -3,10 +3,12 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-dist/
 node_modules/
 .npm
 *.tgz
 .yarn-integrity
 .env
 .DS_Store
+/withInner
+/dist
+

@@ -1,6 +1,6 @@
 {
   "name": "typescript-plugin-inner-jsx",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Typescript transformer which adds references to inner JSX components to parent React components.",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -9,8 +9,9 @@
     "url": "git@github.com:ZEISS/typescript-plugin-inner-jsx.git"
   },
   "scripts": {
-    "build": "tsc --outDir dist",
-    "build:prod": "tsc --outDir dist --sourceMap false",
+    "moveWithInner": "cp -r ./dist/withInner . && rm -rf ./dist/withInner",
+    "build": "tsc --outDir dist && npm run moveWithInner",
+    "build:prod": "tsc --outDir dist --sourceMap false && npm run moveWithInner",
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'",
     "test:unit": "jest --config ./jest.config.json",
     "test:watch": "npm run test:baselines -- --watch",
@@ -47,6 +48,7 @@
   },
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "withInner"
   ]
 }

@@ -1,5 +1,9 @@
 # Typescript Inner JSX Plugin Changelog
 
+## 0.1.8
+
+- `withInner` HOC was moved to package root subfolder. 
+
 ## 0.1.7
 
 - Implemented HOC for adding inner structure to the component.
