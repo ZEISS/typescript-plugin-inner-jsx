@@ -1,5 +1,4 @@
 import createTransformer from './createTransformer';
-import { withInner } from './withInner';
 
-export { createTransformer, withInner };
+export { createTransformer };
 export default createTransformer;
