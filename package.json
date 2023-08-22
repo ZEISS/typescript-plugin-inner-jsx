@@ -34,7 +34,7 @@
     "@types/jest": "^23.3.10",
     "@types/minimist": "^1.2.0",
     "@types/node": "^10.12.15",
-    "jest": "^23.6.0",
+    "jest": "^29.6.3",
     "minimist": "^1.2.0",
     "nodemon": "^1.18.8",
     "prettier": "^1.15.3",
